@@ -150,6 +150,7 @@ select:focus,input[type="date"]:focus{outline:none;border-color:#f5821f;}
 .dl-toast.show{display:flex;}
 
 @media(max-width:768px){.charts-grid{grid-template-columns:1fr;}.ctrl-label{display:none;}.kpi-value{font-size:22px;}}
+<<<<<<< HEAD
 
 /* MOBILE RESPONSIVE */
 @media(max-width:768px){
@@ -178,6 +179,8 @@ select:focus,input[type="date"]:focus{outline:none;border-color:#f5821f;}
 
 button,.btn,.tab,.kpi-card{min-height:44px;}
 
+=======
+>>>>>>> parent of 58439c5 (Update index.html)
 </style>
 </head>
 <body>
@@ -227,7 +230,13 @@ button,.btn,.tab,.kpi-card{min-height:44px;}
     <div class="tab" data-tab="geo">🌍 Geo Analysis</div>
   </div>
   <div class="toolbar-actions">
+<<<<<<< HEAD
     <button class="btn primary" id="btnDlAll" title="Download all tabs">📥 Export All</button>
+=======
+    <button class="btn" id="btnDlTab" title="Download current tab as PNG">⬇ Tab PNG</button>
+    <button class="btn" id="btnDlCSV" title="Download current tab data as CSV">⬇ Tab CSV</button>
+    <button class="btn primary" id="btnDlAll" title="Download all tabs as PNG">⬇ All Tabs</button>
+>>>>>>> parent of 58439c5 (Update index.html)
   </div>
 </div>
 
@@ -607,10 +616,23 @@ function getTabCSV(){
   return null;
 }
 
+document.getElementById('btnDlCSV').addEventListener('click',()=>{
+  const r=getTabCSV();if(!r){showToast('No CSV data for this tab');return;}
+  const blob=new Blob([r.csv],{type:'text/csv'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='R10_'+r.name+'.csv';a.click();
   showToast('Downloaded R10_'+r.name+'.csv');
 });
 
+document.getElementById('btnDlTab').addEventListener('click',()=>{
+  const panel=document.querySelector('.tab-panel.active');
+  if(!panel){showToast('Nothing to capture');return;}
+  showToast('Capturing tab...', 3000);
+  html2canvas(panel,{backgroundColor:isDark()?'#0f1117':'#f0f2f8',scale:1.5,useCORS:true,logging:false}).then(canvas=>{
+    const tab=document.querySelector('.tab.active')?.dataset?.tab||'tab';
+    const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='R10_'+tab+'_dashboard.png';a.click();
+    showToast('Downloaded tab PNG ✓');
+  }).catch(()=>showToast('Screenshot failed — try ⬇ PNG on individual charts'));
+});
 
 document.getElementById('btnDlAll').addEventListener('click',async()=>{
   const tabs=['summary','acquisition','retention','features','video','geo'];
