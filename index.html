@@ -150,6 +150,55 @@ select:focus,input[type="date"]:focus{outline:none;border-color:#f5821f;}
 .dl-toast.show{display:flex;}
 
 @media(max-width:768px){.charts-grid{grid-template-columns:1fr;}.ctrl-label{display:none;}.kpi-value{font-size:22px;}}
+/* MOBILE RESPONSIVE */
+@media(max-width:768px){
+  .topbar{padding:8px 12px;flex-direction:column;align-items:flex-start;gap:8px;}
+  .topbar-right{width:100%;margin-left:0;}
+  .ctrl-group{font-size:11px;}
+  select,input[type="date"]{padding:8px 10px;font-size:13px;}
+  .theme-toggle{padding:4px;}
+  .theme-btn{padding:6px 9px;font-size:13px;}
+}
+
+@media(max-width:768px){
+  .toolbar{padding:10px 12px;flex-direction:column;align-items:stretch;}
+  .toolbar-tabs{overflow-x:auto;gap:2px;}
+  .tab{padding:10px 12px;font-size:12px;flex-shrink:0;}
+  .toolbar-actions{width:100%;gap:8px;}
+  .toolbar-actions .btn{flex:1;padding:12px 8px;font-size:13px;text-align:center;}
+}
+
+@media(max-width:768px){
+  .content{padding:12px;}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .kpi-card{padding:14px;gap:4px;cursor:pointer;}
+  .kpi-label{font-size:10px;}
+  .kpi-value{font-size:20px;}
+  .charts-grid{grid-template-columns:1fr;gap:12px;}
+  .chart-card{padding:14px;}
+  .chart-container canvas{max-height:200px;}
+  .chart-header{flex-direction:column;gap:8px;}
+  .chart-actions{width:100%;justify-content:flex-start;gap:6px;}
+  .chart-btn{padding:6px 10px;font-size:12px;}
+  table{font-size:11px;}
+  th,td{padding:8px 6px;}
+  input{-webkit-appearance:none;appearance:none;}
+}
+
+/* Touch-friendly adjustments */
+button,.btn,.tab,.kpi-card,.chart-btn{min-height:44px;}
+
+@media(max-width:480px){
+  .topbar{padding:6px 10px;}
+  .toolbar{padding:8px 10px;}
+  .content{padding:8px;}
+  .kpi-grid{grid-template-columns:1fr;}
+  .charts-grid{gap:10px;}
+  .chart-card{padding:12px;}
+  .btn{font-size:12px;}
+  table{font-size:10px;}
+}
+
 </style>
 </head>
 <body>
@@ -199,9 +248,7 @@ select:focus,input[type="date"]:focus{outline:none;border-color:#f5821f;}
     <div class="tab" data-tab="geo">🌍 Geo Analysis</div>
   </div>
   <div class="toolbar-actions">
-    <button class="btn" id="btnDlTab" title="Download current tab as PNG">⬇ Tab PNG</button>
-    <button class="btn" id="btnDlCSV" title="Download current tab data as CSV">⬇ Tab CSV</button>
-    <button class="btn primary" id="btnDlAll" title="Download all tabs as PNG">⬇ All Tabs</button>
+    <button class="btn primary" id="btnDlAll" title="Download all tabs as PNG">📥 Export All</button>
   </div>
 </div>
 
@@ -581,23 +628,10 @@ function getTabCSV(){
   return null;
 }
 
-document.getElementById('btnDlCSV').addEventListener('click',()=>{
-  const r=getTabCSV();if(!r){showToast('No CSV data for this tab');return;}
-  const blob=new Blob([r.csv],{type:'text/csv'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='R10_'+r.name+'.csv';a.click();
   showToast('Downloaded R10_'+r.name+'.csv');
 });
 
-document.getElementById('btnDlTab').addEventListener('click',()=>{
-  const panel=document.querySelector('.tab-panel.active');
-  if(!panel){showToast('Nothing to capture');return;}
-  showToast('Capturing tab...', 3000);
-  html2canvas(panel,{backgroundColor:isDark()?'#0f1117':'#f0f2f8',scale:1.5,useCORS:true,logging:false}).then(canvas=>{
-    const tab=document.querySelector('.tab.active')?.dataset?.tab||'tab';
-    const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='R10_'+tab+'_dashboard.png';a.click();
-    showToast('Downloaded tab PNG ✓');
-  }).catch(()=>showToast('Screenshot failed — try ⬇ PNG on individual charts'));
-});
 
 document.getElementById('btnDlAll').addEventListener('click',async()=>{
   const tabs=['summary','acquisition','retention','features','video','geo'];
